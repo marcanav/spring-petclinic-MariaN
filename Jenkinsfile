@@ -8,7 +8,7 @@ pipeline {
             steps {
                 script {
                     // Building project (assuming Maven)
-                    sh 'mvn clean package'
+                    bat 'mvn clean package'
                 }
             }
         }
@@ -16,7 +16,7 @@ pipeline {
             steps {
                 script {
                     // Running tests and generating JaCoCo coverage report
-                    sh 'mvn test jacoco:report'
+                    bat 'mvn test jacoco:report'
                 }
             }
         }
@@ -29,3 +29,4 @@ pipeline {
         }
     }
 }
+
