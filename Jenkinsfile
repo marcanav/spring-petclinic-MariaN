@@ -1,32 +1,32 @@
 pipeline {
     agent any
+   
     triggers {
-        cron('H/10 * * * 4') // Triggers every 10 minutes on Thursdays
+        cron('H/10 * * * *')
     }
+   
     stages {
         stage('Build') {
             steps {
-                script {
-                    // Building project (assuming Maven)
-                    bat 'mvn clean package'
-                }
+                bat 'mvn clean install'
             }
         }
-        stage('Test and Generate JaCoCo Report') {
+        stage('Test') {
             steps {
-                script {
-                    // Running tests and generating JaCoCo coverage report
-                    bat 'mvn test jacoco:report'
-                }
+                bat 'mvn test'
             }
         }
-        // Add other stages like 'Deploy' as needed
-    }
-    post {
-        always {
-            // Archive the JaCoCo reports
-            jacoco(execPattern: '**/*/target/site/jacoco/jacoco.xml')
+        stage('Generate Code Coverage') {
+            steps {
+                bat 'mvn jacoco:prepare-agent test jacoco:report'
+            }
+            post {
+                always {
+                    jacoco(execPattern: '**/target/jacoco.exec')
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site/jacoco', reportFiles: 'index.html', reportName: 'JaCoCo Code Coverage Report'])
+                }
+            }
         }
     }
 }
-
+ 
